@@ -14,9 +14,13 @@
         <input type="text" id="company" name="company" required>
 
         <label for="stage">Stage:</label>
-        <input type="text" id="stage" name="stage" required>
+        <select id="stage" name="stage" required>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+        </select>
 
-        <label for="salary">Salary:</label>
+        <label for="salary">Salary in Php:</label>
         <input type="number" id="salary" name="salary" required>
 
         <label for="date_applied">Date Applied (YYYY-MM-DD):</label>
@@ -24,10 +28,7 @@
 
         <label for="deadline">Deadline (Optional):</label>
         <input type="date" id="deadline" name="deadline">
-
-        <label for="role_type">Role Type (Optional):</label>
-        <input type="text" id="role_type" name="role_type">
-
+        
         <label for="priority">High Priority:</label>
         <input type="checkbox" id="priority" name="priority">
 

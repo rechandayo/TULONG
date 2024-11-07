@@ -42,6 +42,7 @@ tr:hover {
     background-color: #ddd;
 }
 
+/* Links and buttons styling */
 a, button {
     display: inline-block;
     margin: 10px 5px;
@@ -58,8 +59,70 @@ a:hover, button:hover {
     background-color: #0056b3;
 }
 
-form {
+/* Action buttons in table rows */
+button {
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    margin-left: 5px;
+}
+
+button[type="submit"] {
+    background-color: #28a745; /* Green for submit */
+}
+
+button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+button.delete-btn {
+    background-color: #dc3545; /* Red for delete */
+}
+
+button.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* Inline form elements inside table cells */
+td form {
     display: inline;
+}
+
+td select, td button {
+    vertical-align: middle;
+}
+
+/* Style for dropdowns */
+select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #f4f4f9;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Highlight dropdown on hover */
+select:hover {
+    background-color: #e9ecef;
+}
+
+/* Slight shadow on buttons */
+button {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Center the form on the add_application page */
@@ -86,10 +149,20 @@ input[type="text"], input[type="number"], input[type="date"], select {
     box-sizing: border-box;
 }
 
+/* Submit button styling */
 button[type="submit"] {
     background-color: #28a745;
 }
 
 button[type="submit"]:hover {
     background-color: #218838;
+}
+
+td.priority-yes {
+    font-weight: bold;
+    color: #d9534f; /* Red color to indicate high priority */
+}
+
+td.priority-no {
+    color: #5cb85c; /* Green color for non-priority */
 }
