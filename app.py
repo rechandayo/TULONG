@@ -193,8 +193,7 @@ def view_applications(filter_type):
     user_id = session["user_id"]
     username = session.get("username")  # Retrieve the username from the session
     sort_order = request.args.get("order", "asc")  # Default to ascending
-    algorithm = request.args.get("algorithm", "selection")  # Sorting algorithm
-    sort_order = request.args.get("order", "asc")  # Default to ascending
+    algorithm = request.args.get("algorithm", "selection")  # Default Sorting algorithm
     reverse = sort_order == "desc"
 
     key = filter_key_map.get(filter_type, "date_applied")  # Default to "date_applied" if no match

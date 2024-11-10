@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+<head>    
     <title>Job Application Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -55,7 +55,7 @@
                         <option value="Offer" {% if app['stage'] == 'Offer' %}selected{% endif %}>Offer</option>
                         <option value="Rejected" {% if app['stage'] == 'Rejected' %}selected{% endif %}>Rejected</option>
                     </select>
-                    <button type="submit" onclick="preventScroll(event)">Update Stage</button>
+                    <button type="submit" onclick="preventScroll()">Update Stage</button>
                 </form>
             </td>
         </tr>
@@ -68,7 +68,8 @@
     </div>
 
     <script>
-        function preventScroll(event) {
+        function preventScroll(event) 
+        {
             event.preventDefault();  // Prevents the page from reloading and scrolling up
         }
     </script>
