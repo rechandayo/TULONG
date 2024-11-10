@@ -3,6 +3,8 @@ from flask_bcrypt import Bcrypt
 import sqlite3
 from datetime import datetime
 from functools import wraps
+import time
+from time import perf_counter
 
 
 app = Flask(__name__)
@@ -78,10 +80,13 @@ def login_required(f):
 @login_required
 def index():
     user_id = session["user_id"]
+    username = session.get("username")  # Retrieve the username from the session
+    
     conn = get_db_connection()
     applications = conn.execute("SELECT * FROM applications WHERE user_id = ?", (user_id,)).fetchall()
     conn.close()
-    return render_template("index.html", applications=applications)
+    
+    return render_template("index.html", applications=applications, username=username)
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
@@ -111,79 +116,51 @@ def add_application():
 
 
 # Selection Sort: Sort by Salary
-def selection_sort(applications, reverse=False):
+def selection_sort(applications, key, reverse=False):
     n = len(applications)
     for i in range(n):
-        selected_index = i
+        selected = i
         for j in range(i + 1, n):
-            if (applications[j]["salary"] < applications[selected_index]["salary"]) ^ reverse:
-                selected_index = j
-        applications[i], applications[selected_index] = applications[selected_index], applications[i]
+            try:
+                # Compare values with `get` to handle missing keys
+                if (applications[j].get(key, float('inf')) < applications[selected].get(key, float('inf'))) != reverse:
+                    selected = j
+            except KeyError:
+                continue  # Skip if key is missing
+        # Swap if a new selected index was found
+        applications[i], applications[selected] = applications[selected], applications[i]
     return applications
 
-# Use Selection sort: Sort by Priority
-def priority_sort(applications, reverse):
-    n = len(applications)
-    for i in range(n):
-        selected_index = i
-        for j in range(i + 1, n):
-            if (applications[j]["priority"] < applications[selected_index]["priority"]) ^ reverse:
-                selected_index = j
-        applications[i], applications[selected_index] = applications[selected_index], applications[i]
-    return applications
-
-# Shell Sort: Sort by Date Applied
-def shell_sort(applications, reverse=False):
+def shell_sort(applications, key, reverse=False):
     n = len(applications)
     gap = n // 2
+
     while gap > 0:
         for i in range(gap, n):
             temp = applications[i]
             j = i
-            while j >= gap and (applications[j - gap]["date_applied"] > temp["date_applied"]) ^ reverse:
+            # Compare using the provided key
+            while j >= gap and (applications[j - gap][key] > temp[key]) != reverse:
                 applications[j] = applications[j - gap]
                 j -= gap
             applications[j] = temp
         gap //= 2
+    
     return applications
 
-def deadline_sort(applications, reverse=False):
-    n = len(applications)
-    gap = n // 2
-    while gap > 0:
-        for i in range(gap, n):
-            temp = applications[i]
-            j = i
-            while j >= gap and (applications[j - gap]["deadline"] > temp["deadline"]) ^ reverse:
-                applications[j] = applications[j - gap]
-                j -= gap
-            applications[j] = temp
-        gap //= 2
-    return applications
-
-# Bucket Sort: Sort by Stage
-def bucket_sort(applications, reverse=False):
-    # Define the desired order for stages
-    stage_order = ["Applied", "Interview", "Offer", "Rejected"]
-    if reverse:
-        stage_order = stage_order[::-1]  # Reverse order for descending
-
-    # Create buckets based on the stage order
-    stage_buckets = {stage: [] for stage in stage_order}
+def bucket_sort(applications, key, reverse=False):
+    # Assume that `key` contains categorical data for bucket sort
+    buckets = {}
     for app in applications:
-        stage = app["stage"]
-        # Add applications to the correct bucket if stage matches, else default to "Applied"
-        if stage in stage_buckets:
-            stage_buckets[stage].append(app)
-        else:
-            stage_buckets["Applied"].append(app)
+        bucket_key = app[key]
+        if bucket_key not in buckets:
+            buckets[bucket_key] = []
+        buckets[bucket_key].append(app)
 
-    # Flatten the buckets back into a single list, preserving the desired stage order
-    sorted_applications = []
-    for stage in stage_order:
-        sorted_applications.extend(stage_buckets[stage])
-
-    return sorted_applications
+    sorted_apps = []
+    for bucket_key in sorted(buckets, reverse=reverse):
+        sorted_apps.extend(buckets[bucket_key])
+    return sorted_apps
 
 
 # Route to delete an application by ID
@@ -196,28 +173,62 @@ def delete_application(id):
     return redirect(url_for("index"))
 
 # Route to view applications by filter
+algorithm_complexities = {
+    "selection": {"time": "O(n²)", "space": "O(1)"},
+    "shell": {"time": "O(n log n) - O(n²)", "space": "O(1)"},
+    "bucket": {"time": "O(n + k)", "space": "O(n + k)"},
+}
+
+filter_key_map = {
+    "salary": "salary",
+    "date": "date_applied",
+    "deadline": "deadline",
+    "priority": "priority",
+    "stage": "stage"
+}
+
 @app.route("/view/<filter_type>")
+@login_required
 def view_applications(filter_type):
+    user_id = session["user_id"]
+    username = session.get("username")  # Retrieve the username from the session
     sort_order = request.args.get("order", "asc")  # Default to ascending
+    algorithm = request.args.get("algorithm", "selection")  # Sorting algorithm
+    sort_order = request.args.get("order", "asc")  # Default to ascending
+    reverse = sort_order == "desc"
+
+    key = filter_key_map.get(filter_type, "date_applied")  # Default to "date_applied" if no match
+
     conn = get_db_connection()
     applications = conn.execute("SELECT * FROM applications").fetchall()
-    applications = [dict(app) for app in applications]  # Convert Row objects to dictionaries
+    applications = [dict(app) for app in applications]
     conn.close()
 
-    # Apply sorting based on filter_type
-    reverse = sort_order == "desc"
-    if filter_type == "salary":
-        applications = selection_sort(applications, reverse)
-    elif filter_type == "date":
-        applications = shell_sort(applications, reverse)
-    elif filter_type == "stage":
-        applications = bucket_sort(applications, reverse)
-    elif filter_type == "deadline":
-        applications = deadline_sort(applications, reverse)
-    elif filter_type == "priority":
-        applications = priority_sort(applications, reverse)
+    # Measure the time taken by the sorting algorithm with higher precision
+    start_time = perf_counter()
 
-    return render_template("view_applications.html", applications=applications, filter_type=filter_type, sort_order=sort_order)
+    if algorithm == "selection":
+        applications = selection_sort(applications, key=key, reverse=reverse)
+        complexity = "O(n^2) time, O(1) space"
+    elif algorithm == "shell":
+        applications = shell_sort(applications, key=key, reverse=reverse)
+        complexity = "O(n^1.5) time (avg), O(1) space"
+    elif algorithm == "bucket":
+        applications = bucket_sort(applications, key=key, reverse=reverse)
+        complexity = "O(n+k) time, O(n+k) space"
+
+    elapsed_time_ms = (perf_counter() - start_time) * 1000  # Convert to milliseconds
+
+    return render_template(
+        "view_applications.html",
+        applications=applications,
+        filter_type=filter_type,
+        sort_order=sort_order,
+        algorithm=algorithm,
+        elapsed_time_ms=elapsed_time_ms,
+        complexity=complexity,
+        username=username
+    )
 
 # Route to update the stage of an application
 @app.route("/update_stage/<int:id>", methods=["POST"])

@@ -5,36 +5,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Job Application Manager</h1>
+    <h1>Hi, {{ username }}!</h1>
     <div>
         <a href="{{ url_for('add_application') }}">Add New Application</a>
-        <a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc') }}">
-            Sort by Salary {{ '↑' if sort_order == 'asc' else '↓' }}
-        </a>
-        <a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc') }}">
-            Sort by Date Applied {{ '↑' if sort_order == 'asc' else '↓' }}
-        </a>
-        <a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc') }}">
-            Deadline {{ '↑' if sort_order == 'asc' else '↓' }}
-        </a>
-        <a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc') }}">
-            Priority {{ '↑' if sort_order == 'asc' else '↓' }}
-        </a>
-        <a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc') }}">
-            Sort by Stage {{ '↑' if sort_order == 'asc' else '↓' }}
-        </a>
         <a href="{{ url_for('logout') }}">Logout</a>
     </div>
-    <h2>All Applications</h2>
+    
+    <h2>Job Applications</h2>
+
+    <!-- Sorting Algorithm Selection -->
+    <form method="get" action="{{ url_for('view_applications', filter_type=filter_type, order=sort_order) }}" id="sortForm">
+        <label for="sortAlgorithm">Choose Sorting Algorithm:</label>
+        <select name="algorithm" id="sortAlgorithm" onchange="document.getElementById('sortForm').submit();">
+            <option value="selection" {% if algorithm == 'selection' %}selected{% endif %}>Selection Sort</option>
+            <option value="shell" {% if algorithm == 'shell' %}selected{% endif %}>Shell Sort</option>
+            <option value="bucket" {% if algorithm == 'bucket' %}selected{% endif %}>Bucket Sort</option>
+        </select>
+    </form>
+
+    <!-- Applications Table with Sort Links in Headers -->
     <table>
         <tr>
             <th>Title</th>
             <th>Company</th>
-            <th>Salary</th>
-            <th>Date Applied</th>
-            <th>Deadline</th>
-            <th>Priority</th>
-            <th>Stage</th>
+            <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Salary</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Date Applied</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Deadline</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Priority</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Stage</a></th>
             <th>Actions</th>
         </tr>
         {% for app in applications %}
@@ -45,23 +43,37 @@
             <td>{{ app['date_applied'] }}</td>
             <td>{{ app['deadline'] }}</td>
             <td>{{ 'Yes' if app['priority'] else 'No' }}</td>
-                <td>{{ app['stage'] }}</td>
-                <td>
-                    <form action="{{ url_for('delete_application', id=app['id']) }}" method="post" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Are you sure you want to delete this application?');">Delete</button>
-                    </form>
-                    <form action="{{ url_for('update_stage', id=app['id']) }}" method="post" style="display:inline;">
-                        <select name="stage" required>
-                            <option value="Applied" {% if app['stage'] == 'Applied' %}selected{% endif %}>Applied</option>
-                            <option value="Interview" {% if app['stage'] == 'Interview' %}selected{% endif %}>Interview</option>
-                            <option value="Offer" {% if app['stage'] == 'Offer' %}selected{% endif %}>Offer</option>
-                            <option value="Rejected" {% if app['stage'] == 'Rejected' %}selected{% endif %}>Rejected</option>
-                        </select>
-                        <button type="submit">Update Stage</button>
-                    </form>
+            <td>{{ app['stage'] }}</td>
+            <td>
+                <form action="{{ url_for('delete_application', id=app['id']) }}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this application?');">Delete</button>
+                </form>
+                <form action="{{ url_for('update_stage', id=app['id']) }}" method="post" style="display:inline;">
+                    <select name="stage" required>
+                        <option value="Applied" {% if app['stage'] == 'Applied' %}selected{% endif %}>Applied</option>
+                        <option value="Interview" {% if app['stage'] == 'Interview' %}selected{% endif %}>Interview</option>
+                        <option value="Offer" {% if app['stage'] == 'Offer' %}selected{% endif %}>Offer</option>
+                        <option value="Rejected" {% if app['stage'] == 'Rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                    <button type="submit" onclick="preventScroll(event)">Update Stage</button>
+                </form>
             </td>
         </tr>
         {% endfor %}
     </table>
+
+    <!-- Complexity Display -->
+    <div>
+    <p>Sorted using {{ algorithm }} sort in {{ elapsed_time_ms | round(2) }} ms</p>
+    <p>Time Complexity: {{ complexity }}</p>
+    </div>
+
+    <script>
+        function preventScroll(event) {
+            event.preventDefault();  // Prevents the page from reloading and scrolling up
+            // You can add additional actions here if needed, like sending an AJAX request
+        }
+    </script>
+
 </body>
 </html>
