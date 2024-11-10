@@ -13,8 +13,14 @@
     
     <h2>Job Applications</h2>
 
+    <!-- Search Form -->
+    <form action="{{ url_for('view_applications', filter_type='salary') }}" method="get">
+        <input type="text" name="search" placeholder="Search by title, company, etc." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
     <!-- Sorting Algorithm Selection -->
-    <form method="get" action="{{ url_for('view_applications', filter_type=filter_type, order=sort_order) }}" id="sortForm">
+    <form method="get" action="{{ url_for('view_applications', filter_type='salary', order=sort_order) }}" id="sortForm">
         <label for="sortAlgorithm">Choose Sorting Algorithm:</label>
         <select name="algorithm" id="sortAlgorithm" onchange="document.getElementById('sortForm').submit();">
             <option value="selection" {% if algorithm == 'selection' %}selected{% endif %}>Selection Sort</option>

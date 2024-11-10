@@ -1,8 +1,16 @@
 <!doctype html>
 <html lang="en">
-<head>    
+<head>
     <title>Job Application Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <script>
+        function preventScroll(event) 
+        {
+            event.preventDefault();  // Prevents the page from reloading and scrolling up
+        }
+    </script>
+
 </head>
 <body>
     <h1>Hi, {{ username }}!</h1>
@@ -12,6 +20,12 @@
     </div>
     
     <h2>Job Applications</h2>
+
+    <!-- Search Form -->
+    <form action="{{ url_for('view_applications', filter_type='date') }}" method="get">
+        <input type="text" name="search" placeholder="Search by title, company, etc." value="{{ request.args.get('search', '') }}">
+        <button type="submit">Search</button>
+    </form>
 
     <!-- Sorting Algorithm Selection -->
     <form method="get" action="{{ url_for('view_applications', filter_type=filter_type, order=sort_order) }}" id="sortForm">
@@ -23,18 +37,21 @@
         </select>
     </form>
 
+    
     <!-- Applications Table with Sort Links in Headers -->
     <table>
         <tr>
             <th>Title</th>
             <th>Company</th>
-            <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Salary</a></th>
-            <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Date Applied</a></th>
-            <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Deadline</a></th>
-            <th><a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Priority</a></th>
-            <th><a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Stage</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" class="sort-button">Salary</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" class="sort-button">Date Applied</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" class="sort-button">Deadline</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" class="sort-button">Priority</a></th>
+            <th><a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" class="sort-button">Stage</a></th>
             <th>Actions</th>
         </tr>
+
+    <div id="applications-container">
         {% for app in applications %}
         <tr>
             <td>{{ app['title'] }}</td>
@@ -61,18 +78,13 @@
         </tr>
         {% endfor %}
     </table>
+    </div>
 
     <!-- Complexity Display -->
     <div>
     <p>Sorted using {{ algorithm }} sort in {{ elapsed_time_ms | round(2) }} ms</p>
     </div>
 
-    <script>
-        function preventScroll(event) 
-        {
-            event.preventDefault();  // Prevents the page from reloading and scrolling up
-        }
-    </script>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_bcrypt import Bcrypt
 import sqlite3
 from datetime import datetime
@@ -86,7 +86,7 @@ def index():
     applications = conn.execute("SELECT * FROM applications WHERE user_id = ?", (user_id,)).fetchall()
     conn.close()
     
-    return render_template("index.html", applications=applications, username=username)
+    return render_template("index.html", applications=applications, username=username, filter_type='salary')
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
@@ -195,13 +195,21 @@ def view_applications(filter_type):
     sort_order = request.args.get("order", "asc")  # Default to ascending
     algorithm = request.args.get("algorithm", "selection")  # Default Sorting algorithm
     reverse = sort_order == "desc"
-
     key = filter_key_map.get(filter_type, "date_applied")  # Default to "date_applied" if no match
+    search_query = request.args.get('search', '')
 
     conn = get_db_connection()
     applications = conn.execute("SELECT * FROM applications").fetchall()
     applications = [dict(app) for app in applications]
     conn.close()
+
+        # Filter by search query if provided
+    if search_query:
+        applications = [
+            app for app in applications
+            if search_query.lower() in app['title'].lower() or 
+               search_query.lower() in app['company'].lower()
+        ]
 
     # Measure the time taken by the sorting algorithm with higher precision
     start_time = perf_counter()
@@ -218,8 +226,11 @@ def view_applications(filter_type):
 
     elapsed_time_ms = (perf_counter() - start_time) * 1000  # Convert to milliseconds
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('applications_table.html', applications=applications)
+
     return render_template(
-        "view_applications.html",
+        'view_applications.html',
         applications=applications,
         filter_type=filter_type,
         sort_order=sort_order,
@@ -236,6 +247,7 @@ def update_stage(id):
     conn.execute("UPDATE applications SET stage = ? WHERE id = ?", (new_stage, id))
     conn.commit()
     conn.close()
+    
     return redirect(url_for("index"))
 
 
