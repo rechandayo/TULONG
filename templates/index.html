@@ -26,8 +26,8 @@
     <!-- Applications Table with Sort Links in Headers -->
     <table>
         <tr>
-            <th><a href="{{ url_for('view_applications', filter_type='title', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Title</a></th>
-            <th><a href="{{ url_for('view_applications', filter_type='company', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Company</a></th>
+            <th>Title</th>
+            <th>Company</th>
             <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Salary</a></th>
             <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Date Applied</a></th>
             <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Deadline</a></th>
@@ -61,12 +61,6 @@
         </tr>
         {% endfor %}
     </table>
-
-    <!-- Complexity Display -->
-    <div>
-    <p>Sorted using {{ algorithm }} sort in {{ elapsed_time_ms | round(2) }} ms</p>
-    <p>Time Complexity: {{ complexity }}</p>
-    </div>
 
 </body>
 </html>

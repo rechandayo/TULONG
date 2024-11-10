@@ -226,7 +226,6 @@ def view_applications(filter_type):
         sort_order=sort_order,
         algorithm=algorithm,
         elapsed_time_ms=elapsed_time_ms,
-        complexity=complexity,
         username=username
     )
 
@@ -256,3 +255,5 @@ def search():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+    
