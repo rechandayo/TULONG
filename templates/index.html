@@ -20,12 +20,13 @@
     </form>
 
     <!-- Sorting Algorithm Selection -->
-    <form method="get" action="{{ url_for('view_applications', filter_type='salary', order=sort_order) }}" id="sortForm">
+    <form method="get" action="{{ url_for('view_applications', filter_type=filter_type, order=sort_order) }}" id="sortForm">
         <label for="sortAlgorithm">Choose Sorting Algorithm:</label>
         <select name="algorithm" id="sortAlgorithm" onchange="document.getElementById('sortForm').submit();">
             <option value="selection" {% if algorithm == 'selection' %}selected{% endif %}>Selection Sort</option>
             <option value="shell" {% if algorithm == 'shell' %}selected{% endif %}>Shell Sort</option>
-            <option value="bucket" {% if algorithm == 'bucket' %}selected{% endif %}>Bucket Sort</option>
+            <option value="bucket_selection" {% if algorithm == 'bucket_selection' %}selected{% endif %}>Bucket Sort using Selection Sort</option>
+            <option value="bucket_shell" {% if algorithm == 'bucket_shell' %}selected{% endif %}>Bucket Sort using Shell Sort</option>
         </select>
     </form>
 

@@ -33,7 +33,8 @@
         <select name="algorithm" id="sortAlgorithm" onchange="document.getElementById('sortForm').submit();">
             <option value="selection" {% if algorithm == 'selection' %}selected{% endif %}>Selection Sort</option>
             <option value="shell" {% if algorithm == 'shell' %}selected{% endif %}>Shell Sort</option>
-            <option value="bucket" {% if algorithm == 'bucket' %}selected{% endif %}>Bucket Sort</option>
+            <option value="bucket_selection" {% if algorithm == 'bucket_selection' %}selected{% endif %}>Bucket Sort using Selection Sort</option>
+            <option value="bucket_shell" {% if algorithm == 'bucket_shell' %}selected{% endif %}>Bucket Sort using Shell Sort</option>
         </select>
     </form>
 

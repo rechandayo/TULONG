@@ -148,18 +148,38 @@ def shell_sort(applications, key, reverse=False):
     
     return applications
 
-def bucket_sort(applications, key, reverse=False):
-    # Assume that `key` contains categorical data for bucket sort
+def bucket_sort_with_selection(applications, key, reverse=False):
+    # Creating buckets for the provided key
     buckets = {}
     for app in applications:
         bucket_key = app[key]
         if bucket_key not in buckets:
             buckets[bucket_key] = []
         buckets[bucket_key].append(app)
-
+    
+    # Sort each bucket using selection sort
     sorted_apps = []
     for bucket_key in sorted(buckets, reverse=reverse):
-        sorted_apps.extend(buckets[bucket_key])
+        sorted_bucket = selection_sort(buckets[bucket_key], key, reverse)
+        sorted_apps.extend(sorted_bucket)
+    
+    return sorted_apps
+
+def bucket_sort_with_shell(applications, key, reverse=False):
+    # Creating buckets for the provided key
+    buckets = {}
+    for app in applications:
+        bucket_key = app[key]
+        if bucket_key not in buckets:
+            buckets[bucket_key] = []
+        buckets[bucket_key].append(app)
+    
+    # Sort each bucket using shell sort
+    sorted_apps = []
+    for bucket_key in sorted(buckets, reverse=reverse):
+        sorted_bucket = shell_sort(buckets[bucket_key], key, reverse)
+        sorted_apps.extend(sorted_bucket)
+    
     return sorted_apps
 
 
@@ -213,6 +233,8 @@ def view_applications(filter_type):
 
     # Measure the time taken by the sorting algorithm with higher precision
     start_time = perf_counter()
+    
+
 
     if algorithm == "selection":
         applications = selection_sort(applications, key=key, reverse=reverse)
@@ -220,9 +242,13 @@ def view_applications(filter_type):
     elif algorithm == "shell":
         applications = shell_sort(applications, key=key, reverse=reverse)
         complexity = "O(n^1.5) time (avg), O(1) space"
-    elif algorithm == "bucket":
-        applications = bucket_sort(applications, key=key, reverse=reverse)
-        complexity = "O(n+k) time, O(n+k) space"
+    elif algorithm == "bucket_selection":
+        applications = bucket_sort_with_selection(applications, key=key, reverse=reverse)
+        complexity = "O(n+k) time (bucket) + O(n^2) (selection), O(n+k) space"
+    elif algorithm == "bucket_shell":
+        applications = bucket_sort_with_shell(applications, key=key, reverse=reverse)
+        complexity = "O(n+k) time (bucket) + O(n^1.5) (shell), O(n+k) space"
+
 
     elapsed_time_ms = (perf_counter() - start_time) * 1000  # Convert to milliseconds
 
