@@ -1,0 +1,158 @@
+/* Main Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background-color: #1b1b1b;
+  color: #e0e0e0;
+  padding: 20px;
+  width: 80%;
+  margin: auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+h1 {
+  color: #ffffff;
+}
+
+/* Action Buttons */
+.action-buttons a {
+  display: inline-block;
+  margin: 5px;
+  padding: 8px 12px;
+  color: #ffffff;
+  background-color: #007bff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.action-buttons a:hover {
+  background-color: #0056b3;
+}
+
+.add-btn i, .logout-btn i {
+  margin-right: 5px;
+}
+
+/* Search and Sort */
+.search-sort-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.search-form, .sort-form {
+  display: flex;
+  align-items: center;
+}
+
+.search-form input, .sort-form select {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  margin-right: 10px;
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.search-form button {
+  padding: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-form button:hover {
+  background-color: #0056b3;
+}
+
+/* Table */
+#applications-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+#applications-container th, #applications-container td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #333;
+  color: #ffffff;
+}
+
+td {
+  background-color: #2b2b2b;
+  color: #e0e0e0;
+}
+
+td form {
+  display: inline;
+}
+
+td select {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: #444;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+td button {
+  background-color: #28a745;
+  color: #ffffff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+td button:hover {
+  background-color: #218838;
+}
+
+button i {
+  margin-right: 5px;
+}
+
+/* Complexity Display */
+.complexity {
+  margin-top: 15px;
+  color: #e0e0e0;
+}
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url(bg2.jpg) no-repeat;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+

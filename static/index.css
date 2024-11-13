@@ -1,0 +1,180 @@
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url(bg2.jpg) no-repeat;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+/* Wrapper Container */
+.wrapper {
+  width: 80%;
+  max-width: 1000px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+/* Logo */
+.logo img {
+  max-width: 80px;
+  margin-bottom: 20px;
+}
+
+/* Headings */
+h1 {
+  font-size: 28px;
+  color: #fff;
+}
+
+h2 {
+  font-size: 22px;
+  margin-top: 30px;
+  color: #ddd;
+}
+
+/* Navigation Links */
+.nav-links {
+  margin-top: 20px;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 10px;
+  padding: 10px 15px;
+  color: #fff;
+  background: #007bff;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.nav-btn i {
+  margin-right: 8px;
+}
+
+.nav-btn:hover {
+  background: #0056b3;
+}
+
+/* Search Form */
+.search-form {
+  position: relative;
+  margin-top: 20px;
+}
+
+.search-form i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.search-form input {
+  padding: 10px 10px 10px 35px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  width: 80%;
+}
+
+.search-form button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background: #28a745;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.search-form button:hover {
+  background: #218838;
+}
+
+/* Table Styles */
+.table-container {
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: center;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+table th {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+table td {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Action Buttons */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.action-btn i {
+  margin-right: 5px;
+}
+
+.action-btn:hover {
+  background: #c82333;
+}
+
+/* Sort Form */
+.sort-form label {
+  font-size: 14px;
+  color: #fff;
+}
+
+.sort-form select {
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+}

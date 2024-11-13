@@ -1,39 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>Add Job Application</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Add New Job Application</h1>
-    <form method="post">
-        <label for="title">Job Title:</label>
-        <input type="text" id="title" name="title" required>
+    <link rel="stylesheet" href="{{ url_for('static', filename='add.css') }}" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="logo">
+        <img
+          src="{{ url_for('static', filename='logo5.png') }}"
+          alt="App Logo"
+        />
+      </div>
+      <h1>Add New Job Application</h1>
+      <form method="post" class="form-container">
+        <div class="form-group">
+          <i class="bx bx-briefcase-alt"></i>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Job Title"
+            required
+          />
+        </div>
 
-        <label for="company">Company:</label>
-        <input type="text" id="company" name="company" required>
+        <div class="form-group">
+          <i class="bx bx-building-house"></i>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            placeholder="Company"
+            required
+          />
+        </div>
 
-        <label for="stage">Stage:</label>
-        <select id="stage" name="stage" required>
+        <div class="form-group">
+          <i class="bx bx-stats"></i>
+          <select id="stage" name="stage" required>
+            <option value="">Stage</option>
             <option value="Applied">Applied</option>
             <option value="Interview">Interview</option>
             <option value="Offer">Offer</option>
-        </select>
+          </select>
+        </div>
 
-        <label for="salary">Salary in Php:</label>
-        <input type="number" id="salary" name="salary" required>
+        <div class="form-group">
+          <i class="bx bx-money"></i>
+          <input
+            type="number"
+            id="salary"
+            name="salary"
+            placeholder="Salary per month/Php"
+            required
+          />
+        </div>
 
-        <label for="date_applied">Date Applied (YYYY-MM-DD):</label>
-        <input type="date" id="date_applied" name="date_applied" required>
+        <div class="form-group">
+          <i class="bx bx-calendar"></i>
+          <input type="date" id="date_applied" name="date_applied" required />
+        </div>
 
-        <label for="deadline">Deadline (Optional):</label>
-        <input type="date" id="deadline" name="deadline">
-        
-        <label for="priority">High Priority:</label>
-        <input type="checkbox" id="priority" name="priority">
+        <div class="form-group">
+          <i class="bx bx-calendar-check"></i>
+          <input
+            type="date"
+            id="deadline"
+            name="deadline"
+            placeholder="Deadline (Optional)"
+          />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="priority" name="priority" />
+          <div class="toggle-switch"></div>
+          <label for="priority">High Priority</label>
+        </div>
 
         <button type="submit">Add Application</button>
-    </form>
-    <a href="{{ url_for('index') }}">Back to Home</a>
-</body>
+      </form>
+      <a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
+    </div>
+  </body>
 </html>

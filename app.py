@@ -5,7 +5,7 @@ from datetime import datetime
 from functools import wraps
 import time
 from time import perf_counter
-
+from sorting_algos import (selection_sort, shell_sort, bucket_sort_with_selection, bucket_sort_with_shell)
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -15,6 +15,20 @@ def get_db_connection():
     conn = sqlite3.connect("job_applications.db")  # Ensure this matches the actual path
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def get_application_count():
+    conn = sqlite3.connect("job_applications.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM applications;")
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count
+
+@app.route('/api/application_count', methods=['GET'])
+def application_count():
+    count = get_application_count()
+    return jsonify({'application_count': count})
 
 # Signup Route
 @app.route("/signup", methods=["GET", "POST"])
@@ -115,74 +129,6 @@ def add_application():
     return render_template("add_application.html")
 
 
-# Selection Sort: Sort by Salary
-def selection_sort(applications, key, reverse=False):
-    n = len(applications)
-    for i in range(n):
-        selected = i
-        for j in range(i + 1, n):
-            try:
-                # Compare values with `get` to handle missing keys
-                if (applications[j].get(key, float('inf')) < applications[selected].get(key, float('inf'))) != reverse:
-                    selected = j
-            except KeyError:
-                continue  # Skip if key is missing
-        # Swap if a new selected index was found
-        applications[i], applications[selected] = applications[selected], applications[i]
-    return applications
-
-def shell_sort(applications, key, reverse=False):
-    n = len(applications)
-    gap = n // 2
-
-    while gap > 0:
-        for i in range(gap, n):
-            temp = applications[i]
-            j = i
-            # Compare using the provided key
-            while j >= gap and (applications[j - gap][key] > temp[key]) != reverse:
-                applications[j] = applications[j - gap]
-                j -= gap
-            applications[j] = temp
-        gap //= 2
-    
-    return applications
-
-def bucket_sort_with_selection(applications, key, reverse=False):
-    # Creating buckets for the provided key
-    buckets = {}
-    for app in applications:
-        bucket_key = app[key]
-        if bucket_key not in buckets:
-            buckets[bucket_key] = []
-        buckets[bucket_key].append(app)
-    
-    # Sort each bucket using selection sort
-    sorted_apps = []
-    for bucket_key in sorted(buckets, reverse=reverse):
-        sorted_bucket = selection_sort(buckets[bucket_key], key, reverse)
-        sorted_apps.extend(sorted_bucket)
-    
-    return sorted_apps
-
-def bucket_sort_with_shell(applications, key, reverse=False):
-    # Creating buckets for the provided key
-    buckets = {}
-    for app in applications:
-        bucket_key = app[key]
-        if bucket_key not in buckets:
-            buckets[bucket_key] = []
-        buckets[bucket_key].append(app)
-    
-    # Sort each bucket using shell sort
-    sorted_apps = []
-    for bucket_key in sorted(buckets, reverse=reverse):
-        sorted_bucket = shell_sort(buckets[bucket_key], key, reverse)
-        sorted_apps.extend(sorted_bucket)
-    
-    return sorted_apps
-
-
 # Route to delete an application by ID
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete_application(id):
@@ -217,13 +163,20 @@ def view_applications(filter_type):
     reverse = sort_order == "desc"
     key = filter_key_map.get(filter_type, "date_applied")  # Default to "date_applied" if no match
     search_query = request.args.get('search', '')
+    data_limit = request.args.get("data_limit", "50")
 
     conn = get_db_connection()
-    applications = conn.execute("SELECT * FROM applications").fetchall()
+
+    if data_limit.isdigit():
+        limit = int(data_limit)
+        applications = conn.execute("SELECT * FROM applications LIMIT ?", (limit,)).fetchall()
+    else:
+        applications = conn.execute("SELECT * FROM applications").fetchall()
+
     applications = [dict(app) for app in applications]
     conn.close()
 
-        # Filter by search query if provided
+
     if search_query:
         applications = [
             app for app in applications
@@ -237,24 +190,27 @@ def view_applications(filter_type):
 
 
     if algorithm == "selection":
-        applications = selection_sort(applications, key=key, reverse=reverse)
-        complexity = "O(n^2) time, O(1) space"
+        applications, space_complexity_bytes = selection_sort(applications, key=key, reverse=reverse)
+        time_complexity = "O(n^2)"
     elif algorithm == "shell":
-        applications = shell_sort(applications, key=key, reverse=reverse)
-        complexity = "O(n^1.5) time (avg), O(1) space"
+        applications, space_complexity_bytes = shell_sort(applications, key=key, reverse=reverse)
+        time_complexity = "O(n^1.5) (avg)"
     elif algorithm == "bucket_selection":
-        applications = bucket_sort_with_selection(applications, key=key, reverse=reverse)
-        complexity = "O(n+k) time (bucket) + O(n^2) (selection), O(n+k) space"
+        applications, space_complexity_bytes = bucket_sort_with_selection(applications, key=key, reverse=reverse)
+        time_complexity = "O(n+k) (bucket) + O(n^2) (selection)"
     elif algorithm == "bucket_shell":
-        applications = bucket_sort_with_shell(applications, key=key, reverse=reverse)
-        complexity = "O(n+k) time (bucket) + O(n^1.5) (shell), O(n+k) space"
+        applications, space_complexity_bytes = bucket_sort_with_shell(applications, key=key, reverse=reverse)
+        time_complexity = "O(n+k) (bucket) + O(n^1.5) (shell)"
 
 
-    elapsed_time_ms = (perf_counter() - start_time) * 1000  # Convert to milliseconds
+    # Calculate elapsed time in milliseconds
+    elapsed_time_ms = f"{(perf_counter() - start_time):010.6f}"
 
+    # Check if it's an AJAX request and return the appropriate template
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render_template('applications_table.html', applications=applications)
 
+    # Pass time and space complexity as separate variables
     return render_template(
         'view_applications.html',
         applications=applications,
@@ -262,7 +218,10 @@ def view_applications(filter_type):
         sort_order=sort_order,
         algorithm=algorithm,
         elapsed_time_ms=elapsed_time_ms,
-        username=username
+        time_complexity=time_complexity,
+        space_complexity_bytes=space_complexity_bytes,  # Pass space complexity in bytes
+        username=username,
+        data_limit=data_limit
     )
 
 # Route to update the stage of an application

@@ -1,22 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-witdth,initial-scale=1.0" />
     <title>Signup</title>
-</head>
-<body>
-    <h1>Signup</h1>
-    <form method="post">
-        <label>Username:</label>
-        <input type="text" name="username" required>
-        
-        <label>Email:</label>
-        <input type="email" name="email" required>
-        
-        <label>Password:</label>
-        <input type="password" name="password" required>
-        
-        <button type="submit">Signup</button>
-    </form>
-    <a href="{{ url_for('login') }}">Already have an account? Log in</a>
-</body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='signup.css') }}"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Signup</h1>
+      <form method="post">
+        <div class="input-box">
+          <input type="text" placeholder="Username" name="username" required />
+          <i class="bx bx-user"></i>
+        </div>
+
+        <div class="input-box">
+          <input type="email" placeholder="Email" name="email" required />
+          <i class="bx bx-envelope"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            placeholder="Password"
+            name="password"
+            required
+          />
+          <i class="bx bx-lock-alt"></i>
+        </div>
+
+        <div class="button-container">
+          <button type="submit" class="btn">Signup</button>
+        </div>
+      </form>
+
+      <div class="register-link">
+        <p>
+          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        </p>
+      </div>
+    </div>
+  </body>
 </html>
