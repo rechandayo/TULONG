@@ -6,8 +6,6 @@ from faker import Faker
 # Initialize Faker library for realistic random data
 fake = Faker()
 
-
-
 # Database connection
 def get_db_connection():
     conn = sqlite3.connect("job_applications.db")

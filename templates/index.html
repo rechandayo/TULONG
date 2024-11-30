@@ -14,15 +14,40 @@
                 <a href="{{ url_for('add_application') }}" class="add-btn"><i class="bx bx-plus-circle"></i> Add New Application</a>
                 <a href="{{ url_for('logout') }}" class="logout-btn"><i class="bx bx-log-out"></i> Logout</a>
             </div>
-        </div>
+            <div class="complexity">
+          <p>Sorted using {{ algorithm }} sort in {{ elapsed_time_ms}} seconds</p>
+<p>Time Complexity: {{ time_complexity }}</p>
+<p>Space Complexity: {{ space_complexity_bytes }} bytes</p>
+<p>Total Applications: <span id="applicationCount">Loading...</span></p>
+<p>Data Sorted: {{ filter_type }}</p>
+<p>Number of Data Sorted: {{ data_limit }}</p>
 
-        <h2>Job Applications</h2>
 
-        <div class="search-sort-container">
-            <!-- Search Form -->
-            <form action="{{ url_for('view_applications', filter_type='date') }}" method="get" class="search-form">
-                <input type="text" name="search" placeholder="Search by title, company, etc." value="{{ request.args.get('search', '') }}">
-                <button type="submit"><i class="bx bx-search"></i> Search</button>
+</div>
+</div>
+
+<h2>Job Applications</h2>
+
+<div class="search-sort-container">
+    <!-- Search Form -->
+    <form action="{{ url_for('view_applications', filter_type='date') }}" method="get" class="search-form">
+        <input type="text" name="search" placeholder="Search by title, company, etc." value="{{ request.args.get('search', '') }}">
+        <button type="submit"><i class="bx bx-search"></i> Search</button>
+            </form>
+
+            <form method="GET" action="{{ url_for('view_applications', filter_type=filter_type) }}">
+                <label for="data_limit">Number of records to sort:</label>
+                <select name="data_limit">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="all">All</option>
+                </select>
+                
+                <input type="hidden" name="order" value="{{ sort_order }}">
+                <input type="hidden" name="algorithm" value="{{ algorithm }}">
+                <button type="submit">Sort</button>
             </form>
 
             <!-- Sorting Algorithm Selection -->
@@ -41,15 +66,16 @@
         <div id="applications-container">
             <table>
                 <tr>
-                    <th>Title</th>
-                    <th>Company</th>
-                    <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Salary</a></th>
-                    <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Date Applied</a></th>
-                    <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Deadline</a></th>
-                    <th><a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Priority</a></th>
-                    <th><a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}">Stage</a></th>
-                    <th>Actions</th>
+                    <th style="color: white;">Title</th>
+                    <th style="color: white;">Company</th>
+                    <th><a href="{{ url_for('view_applications', filter_type='salary', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" style="color: white;">Salary</a></th>
+                    <th><a href="{{ url_for('view_applications', filter_type='date', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" style="color: white;">Date Applied</a></th>
+                    <th><a href="{{ url_for('view_applications', filter_type='deadline', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" style="color: white;">Deadline</a></th>
+                    <th><a href="{{ url_for('view_applications', filter_type='priority', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" style="color: white;">Priority</a></th>
+                    <th><a href="{{ url_for('view_applications', filter_type='stage', order='asc' if sort_order == 'desc' else 'desc', algorithm=algorithm) }}" style="color: white;">Stage</a></th>
+                    <th style="color: white;">Actions</th>
                 </tr>
+                
                 {% for app in applications %}
                 <tr>
                     <td>{{ app['title'] }}</td>
@@ -77,6 +103,19 @@
                 {% endfor %}
             </table>
         </div>
+
+
+        <script>
+        fetch('/api/application_count')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('applicationCount').textContent = data.application_count;
+            })
+            .catch(error => {
+                console.error('Error fetching application count:', error);
+                document.getElementById('applicationCount').textContent = 'Error';
+            });
+        </script>
 
         <!-- Complexity Display -->
         

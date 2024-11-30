@@ -100,7 +100,7 @@ def index():
     applications = conn.execute("SELECT * FROM applications WHERE user_id = ?", (user_id,)).fetchall()
     conn.close()
     
-    return render_template("index.html", applications=applications, username=username, filter_type='salary')
+    return render_template("index.html", applications=applications, username=username, filter_type='salary', )
 
 @app.route("/add", methods=["GET", "POST"])
 @login_required
